@@ -1,4 +1,4 @@
-@tool
+tool
 extends PanelContainer
 
 signal CLICK_ROW(value)
@@ -6,13 +6,13 @@ signal CLICK_ROW(value)
 const TableContainer = preload("res://addons/godot_table/TableContainer.gd")
 
 # ................... Export Shared Variables ..................
-@export var column_header_path = "res://addons/godot_table/Column/ColumnHeader.tscn"
-@export var data_template_path = "res://addons/godot_table/Data/Data.tscn"
-@export var column_headers : Array[String] : set = _set_column_headers
-@export var min_row_count : int : set = set_min_row_count
-@export var rows : Array[Array] : set = set_rows
+export (String, FILE, "*.tscn") var column_header_path = "res://addons/godot_table/Column/ColumnHeader.tscn"
+export (String, FILE, "*.tscn") var data_template_path = "res://addons/godot_table/Data/Data.tscn"
+export (Array, String) var column_headers setget _set_column_headers
+export (int) var min_row_count setget set_min_row_count
+export(Array, Array, String) var rows setget set_rows
 
-# Scenes and Resources ......................
+# Scenes and Reosurces ......................
 var preload_tableContainer : PackedScene = preload("TableContainer.tscn")
 
 # Shared Variables .........................
@@ -27,11 +27,11 @@ func _init():
 func _ready():
 	for cd in tableContainer.headerContainer.get_children():
 		if cd.get_class() == "ColumnHeader":
-			cd.connect("COLUMN_SORT",Callable(self,"_sort_by_column"))
-	tableContainer.connect("CLICK_ROW",Callable(self,"_on_RowButtonContainer_CLICK_ROW"))
+			cd.connect("COLUMN_SORT", self, "_sort_by_column")
+	tableContainer.connect("CLICK_ROW", self, "_on_RowButtonContainer_CLICK_ROW")
 	
 func _init_tree():
-	tableContainer = preload_tableContainer.instantiate()
+	tableContainer = preload_tableContainer.instance()
 	self.add_child(tableContainer, true)
 	
 	tableContainer.init_tree()
@@ -43,24 +43,13 @@ func _set_column_headers(new_header):
 	column_headers = new_header
 	tableContainer.set_header(column_headers)
 
-	for row in rows:
-		var row_columns = row.size()
-		var header_columns = column_headers.size()
-		if row_columns > header_columns:
-			row.resize(header_columns)
-		elif row_columns < header_columns:
-			for index in range(header_columns - row_columns):
-				row.push_back("--")
-		valid_row_count = rows.size()
-	tableContainer.set_rows(rows, column_headers.size(), valid_row_count)
-
 func set_rows(new_rows):
 	valid_row_count = new_rows.size()
 	for row in new_rows:
 		var row_columns = row.size()
 		var header_columns = column_headers.size()
 		if row_columns > header_columns:
-			row.resize(header_columns)
+			push_error("error")
 		elif row_columns < header_columns:
 			for index in range(header_columns - row_columns):
 				row.push_back("--")

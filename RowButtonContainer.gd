@@ -1,4 +1,4 @@
-@tool
+tool
 
 extends VBoxContainer
 
@@ -8,5 +8,5 @@ func set_rows(row_count):
 	for index in range(row_count):
 		var btn = Button.new()
 		btn.name = str(index)
-		btn.custom_minimum_size = Vector2(0, 34)
+		btn.rect_min_size = Vector2(0, 34)
 		add_child(btn)
