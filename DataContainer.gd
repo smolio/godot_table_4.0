@@ -1,8 +1,8 @@
-tool
+@tool
 extends GridContainer
 
-export var template_path = ""
-export var datas = []
+@export var template_path = ""
+@export var datas = []
 
 func clear_rows():
 	for child in self.get_children():
@@ -17,13 +17,13 @@ func set_rows(rows, column_size):
 			add_new_table_data_item(row_index, col_index, data)
 
 func add_new_table_data_item(row, column, data):
-	var data_obj = load(template_path).instance()
+	var data_obj = load(template_path).instantiate()
 	data_obj.name = "DATA_%d_%d"%[row, column]
 	data_obj.text = String(data)
 	self.add_child(data_obj)
 
 func sort_column(cmp):
-	datas.sort_custom(cmp, "sort")
+	datas.sort_custom(Callable(cmp,"sort"))
 	clear_rows()
 	set_rows(datas, self.columns)
 
