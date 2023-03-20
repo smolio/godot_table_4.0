@@ -1,4 +1,4 @@
-tool
+@tool
 
 extends VBoxContainer
 
@@ -19,9 +19,9 @@ var cmp = MyCustomSorter.new()
 
 func _on_vscrollbar_visibility_changed():
 	if v_scrollbar.visible == true:
-		headerPanelPlus.rect_min_size.x = v_scrollbar.rect_size.x
+		headerPanelPlus.custom_minimum_size.x = v_scrollbar.size.x
 	else:
-		headerPanelPlus.rect_min_size.x = 0
+		headerPanelPlus.custom_minimum_size.x = 0
 		
 func init_tree():
 	headerPanelPlus = self.get_node("HBoxContainer/PanelPlus")
@@ -31,10 +31,10 @@ func init_tree():
 	
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	v_scrollbar = self.get_node("ScrollContainer").get_v_scrollbar()
-	v_scrollbar.connect("visibility_changed", self, "_on_vscrollbar_visibility_changed")
+	v_scrollbar = self.get_node("ScrollContainer").get_v_scroll_bar()
+	v_scrollbar.connect("visibility_changed",Callable(self,"_on_vscrollbar_visibility_changed"))
 	for header in headerContainer.get_children():
-		header.connect("COLUMN_SORT", self, "_sort_by_column")
+		header.connect("COLUMN_SORT",Callable(self,"_sort_by_column"))
 	
 func _sort_by_column(select_column):
 	for column in headerContainer.get_children():
@@ -47,7 +47,6 @@ func _sort_by_column(select_column):
 	dataContainer.sort_column(cmp)
 
 func set_template_path(column_header_path, data_template_path):
-	print(headerContainer)
 	headerContainer.column_header_path = column_header_path
 	dataContainer.template_path = data_template_path
 
@@ -62,7 +61,7 @@ func set_rows(new_rows : Array, column_size, valid_row_count):
 	for i in range(rowButtonContainer.get_children().size()):
 		var rowButton = rowButtonContainer.get_child(i) as Button
 		if i<valid_row_count :
-			rowButton.connect("pressed", self, "_on_RowButtonContainer_CLICK_ROW", [int(rowButton.name)])
+			rowButton.connect("pressed",Callable(self,"_on_RowButtonContainer_CLICK_ROW").bind(int(str(rowButton.name))))
 		else:
 			rowButton.disabled  = true
 	
